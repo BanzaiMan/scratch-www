@@ -31,7 +31,7 @@ deploy:
   skip_cleanup: $SKIP_CLEANUP
   script: env FASTLY_SERVICE_ID=$FASTLY_SERVICE_ID_STAGING S3_BUCKET_NAME=$S3_BUCKET_NAME_STAGING make sync
   on:
-    repo: LLK/scratch-www
+    repo: BanzaiMan/scratch-www
     branch:
     - develop
     - s3
