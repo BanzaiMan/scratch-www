@@ -6,8 +6,7 @@ cache:
   directories:
   - node_modules
 notifications:
-  slack:
-    secure: ezESiG7JnuSLZc2/PPhOvWUv5BHBCr+g86MsuLLw+S+zz3DUfzWHMQ1g5tUvkeSDTPmfEIX41EnPkaoWtsD3OGO0PGXgseAfA8+6Z4N1rICNZZrhXZB2s6UdwRK1e+0Jol4W3kHmt96BHyN2scLNgJYeWMgSJllVsuPhMTlKBZIXI9u540NH8Nxjl3f2WvoIg64Q1mZvMxkpPbw4xssx6U4HSFE8kTTE6+EFsSxzombFX0cLGjPiJ9QZgGVUk4UkIjyiFLQQDfQlLllCaUpqJ9+qbuCNoMSKA2yty/qyZ8Y+r4OlMberjmBzR9GRLLyXWWcaAfMIgwlRhjtLYIDAUSsGM1iwUWCgyB9maG2IiXuYLSueuMx8DcDwbpUepoDgnqBYnM2AJmT8gcsxqlKYzJpYpHDgZgBlLZQgMXqjrVJHs/Tf9XVcLS6HAn1Ww0OOT01jThfy4gClpAuqLayYexsXOoL+RaFg25E2NzuTtaFWgRfWZgcAeqYNDiUzwun2D4vZ5I+NtdRP0gzpbG2fxhFz05vAqyf1Kp6ZYb17Li3A38dIm6Lsvv3qawAIAgNaZpIZX3f89+uq6jHU8kJy1Iv823JK2Xac3vEz3SHUKJnuXFF0LO07om9AcNEXhP/JrJ617S8nfvDtZRJODMFhz8qQwie+65Ql1I871goBpVs=
+  email: false
 env:
   global:
   - secure: A138rYuXDsOmpEwYxZ31WyXEeq5fgr9qyqsQh1nTFsjBKpFtNM+CN9e0QJQFT3PLs4wH/lWTRSyHxakxKQS1sxq828f9gHed+f15REKk/fRUplcCYIexT9xKVtU3D8CRNn/KBFWk75fZyZt20eyOVIv4h3pInKQz7y84J6PWzB1BCrAFvADrzS1X68Z3NJJLyxnz0YEurzz8mC2v4D0s/XifKTWvRtefD4QM6pE0C2iYyk+ThrLwg7i9FDHVfo0MrkgcdX7mz37SnTr7p7mHWnGXrGngi/NiDRQ+Uwwq/sr2UIww0rCwS1xsOcS//dC4NNqrrt1kUTsoC1Yt87Ny+gI0nUplsfEpdKajAkOYdANC5bJUGqPdSlOds1v9aJs9Hx48uGamWkm/3cFmoJ5uA2ZzUwbSGjTkWbnhwzT0YRvcLGhP1WE/EswaIyK5qMp522E79mP1yH6M750iUvi4N39+QW1BNX3ADkOwyAI67ArX5on5gWP83RXcJ15im7XsBpsmVn/KXi6AouWPb8jmSmKCj0QZCzfLY7ivM42IugYpK2NV7kFB38DpXQamJ5eskgwYa3elRmednIFUuwb1QDnONvJogVjk4CLmoSxssC2mJnnrUItM7l8G6As81GMI+6lTtl86hAuXBjUk60FMbgTAQDX9ll26LgpBy8jHSx8=
@@ -28,32 +27,13 @@ addons:
 before_deploy:
 - zip -qr $BUILD_ARCHIVE .
 deploy:
-- provider: elasticbeanstalk
-  access_key_id: $EB_AWS_ACCESS_KEY_ID
-  secret_access_key: $EB_AWS_SECRET_ACCESS_KEY
-  bucket_name: $EB_AWS_BUCKET_NAME
-  bucket_path: $EB_APP
-  zip_file: $BUILD_ARCHIVE
+- provider: script
   skip_cleanup: $SKIP_CLEANUP
-  region: $EB_REGION
-  app: $EB_APP
-  env: scratch-www-stage-v208
+  script: env FASTLY_SERVICE_ID=$FASTLY_SERVICE_ID_STAGING S3_BUCKET_NAME=$S3_BUCKET_NAME_STAGING make sync
   on:
     repo: LLK/scratch-www
     branch:
     - develop
+    - s3
     - hotfix/*
     - release/*
-- provider: elasticbeanstalk
-  access_key_id: $EB_AWS_ACCESS_KEY_ID
-  secret_access_key: $EB_AWS_SECRET_ACCESS_KEY
-  bucket_name: $EB_AWS_BUCKET_NAME
-  bucket_path: $EB_APP
-  zip_file: $BUILD_ARCHIVE
-  skip_cleanup: $SKIP_CLEANUP
-  region: $EB_REGION
-  app: $EB_APP
-  env: scratch-www-production
-  on:
-    repo: LLK/scratch-www
-    branch: master
